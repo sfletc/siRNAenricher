@@ -247,3 +247,13 @@ class Enrichment(object):
                 seq = b[k][i[0] - self.padding : i[1] + self.padding]
                 c[header] = seq
         c.write_ref_file(out_fa)
+
+
+def extract_enriched_seqs(scram_alignment_file, reference_fa, output_fa, window=200, cutoff=30, abund_count=5, padding=30):
+    a = Enrichment(window, cutoff, abund_count, padding)
+    print("Finding enriched regions with window = {0}, cutoff = {1}, abundance count = {2} and padding = {3}".format(window, cutoff, abund_count, padding))
+    a.find_enriched_regions(scram_alignment_file)
+    a.collapse_enriched_regions()
+    print("Loading reference file and generating FASTA file with enriched regions")
+    a.extract_enriched(reference_fa, output_fa)
+    print("Complete!")
