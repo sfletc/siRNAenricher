@@ -9,6 +9,5 @@ Clone repository
 ### Usage
 
 ```help(sir.extract_enriched_seqs)```
-```Help on function extract_enriched_seqs in module siRNAenricher.enrich:
 
-extract_enriched_seqs(scram_alignment_file, reference_fa, output_fa, window=200, cutoff=30, abund_count=5, padding=30)```
+```extract_enriched_seqs(scram_alignment_file, reference_fa, output_fa, window=200, cutoff=30, abund_count=5, padding=30)```
