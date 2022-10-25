@@ -24,11 +24,13 @@ class RefSeq(dict):
                     pass
                 elif line[0] == ">":
                     header = line[1:]
-                    self[header] = ""
+                    self[header] = []
                 else:
-                    self[header] += line
+                    self[header].append(line)
 
         f.close()
+        for k, v in self.items():
+            self[k] = "".join(v)
 
     def write_ref_file(self, out_file):
         with open(out_file, "w") as f:
@@ -187,17 +189,20 @@ class Enrichment(object):
     Enrichment class
     """
 
-    def __init__(self, window=200, cutoff=30, abund_count=5, padding=30):
+    def __init__(self, window=200, cutoff=30, abund_count=5, strand_ratio=0.2, padding=30 ):
         self.window = window
         self.cutoff = cutoff
         self.abund_count = abund_count
         self.padding = padding
+        self.strand_ratio = strand_ratio
         self.expanded_results = []
         self.collapsed_results = {}
 
     def find_enriched_regions(self, scram2_alignment):
         win_count = 0
         start_pos = 0
+        positive_strand = 0
+        negative_strand = 0
         a = RefProfiles()
         a.load_single_ref_profiles(scram2_alignment)
         for header, alignments in a.single_ref_profiles.items():
@@ -206,14 +211,28 @@ class Enrichment(object):
                     if win_count == 0:
                         win_count = 1
                         start_pos = sa.position
+                        if sa.strand == '+':
+                            positive_strand +=1
+                        else:
+                            negative_strand +=1
                     elif sa.position - start_pos <= self.window:
                         win_count += 1
+                        if sa.strand == '+':
+                            positive_strand +=1
+                        else:
+                            negative_strand +=1
                 if sa.position - start_pos > self.window:
-                    if win_count >= self.abund_count:
+                    if positive_strand == 0 or negative_strand == 0:
+                        pass
+                    elif min(positive_strand, negative_strand)/max(positive_strand, negative_strand) < self.strand_ratio:
+                        pass
+                    elif win_count >= self.abund_count:
                         self.expanded_results.append(
                             [header, start_pos, start_pos + self.window]
                         )
                     win_count = 0
+                    positive_strand = 0
+                    negative_strand = 0
 
     def collapse_enriched_regions(self):
         end = 0
@@ -229,29 +248,45 @@ class Enrichment(object):
                 self.collapsed_results[i[0]].append(i[1:])
 
     def extract_enriched(self, ref, out_fa):
-        b = RefSeq()
-        b.load_ref_file(ref)
-        c = RefSeq()
-        for k, v in self.collapsed_results.items():
-            count = 0
-            for i in v:
-                count += 1
-                header = (
-                    k
-                    + "_siRNA_enriched_"
-                    + str(i[0] - self.padding)
-                    + "-"
-                    + str(i[1] + self.padding)
-                )
+        if len(self.collapsed_results) == 0:
+            print("\nNo siRNA enriched regions identified\n")
+        else:
+            b = RefSeq()
+            b.load_ref_file(ref)
+            c = RefSeq()
+            for k, v in self.collapsed_results.items():
+                count = 0
+                for i in v:
+                    count += 1
+                    header = (
+                        k
+                        + "_siRNA_enriched_"
+                        + str(i[0] - self.padding)
+                        + "-"
+                        + str(i[1] + self.padding)
+                    )
 
-                seq = b[k][i[0] - self.padding : i[1] + self.padding]
-                c[header] = seq
-        c.write_ref_file(out_fa)
+                    seq = b[k][i[0] - self.padding : i[1] + self.padding]
+                    c[header] = seq
+            c.write_ref_file(out_fa)
 
 
-def extract_enriched_seqs(scram_alignment_file, reference_fa, output_fa, window=200, cutoff=30, abund_count=5, padding=30):
-    a = Enrichment(window, cutoff, abund_count, padding)
-    print("Finding enriched regions with window = {0}, cutoff = {1}, abundance count = {2} and padding = {3}".format(window, cutoff, abund_count, padding))
+def extract_enriched_seqs(
+    scram_alignment_file,
+    reference_fa,
+    output_fa,
+    window=200,
+    cutoff=30,
+    abund_count=5,
+    strand_ratio=0.2,
+    padding=30,
+):
+    a = Enrichment(window, cutoff, abund_count, strand_ratio, padding)
+    print(
+        "Finding enriched regions with window = {0}, cutoff = {1}, abundance count = {2}, minimum strand ratio = {3} and padding = {4}".format(
+            window, cutoff, abund_count, strand_ratio, padding
+        )
+    )
     a.find_enriched_regions(scram_alignment_file)
     a.collapse_enriched_regions()
     print("Loading reference file and generating FASTA file with enriched regions")
