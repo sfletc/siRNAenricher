@@ -24,7 +24,7 @@ Clone repository
 
 ```abund_count```: Minimum number of the siRNAs with an alignment count above cutoff for a window to be identified as an enriched region. Default = 5.
 
-```strand_ration```: Minimum ratio of abund_count of siRNAs on the lower abundance strand.  Prevents identification of degraded single-stranded RNA regions. Default = 0.2.
+```strand_ratio```: Minimum ratio of abund_count of siRNAs on the lower abundance strand.  Prevents identification of degraded single-stranded RNA regions. Default = 0.2.
 
 ```padding```: number of nucleotides to added to each end of the window for writing to file.  Default = 30.
 
