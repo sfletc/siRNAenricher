@@ -18,13 +18,13 @@ Clone repository
 
 ```output_fa```: Output file to results identified regions in FASTA format
 
-```window```: window size in nt to scan in.  This will be automatically expanded if enriched windows are adjacent (within len window)
+```window```: window size in nt to scan in.  This will be automatically expanded if enriched windows are adjacent (within len window).  Default = 200.
 
-```cutoff```: Minimum alignment count for an siRNA to be included in identification
+```cutoff```: Minimum alignment count for an siRNA to be included in identification. Default = 30.
 
-```abund_count```: Minimum number of the siRNAs with an alignment count above cutoff for a window to be identified as an enriched region
+```abund_count```: Minimum number of the siRNAs with an alignment count above cutoff for a window to be identified as an enriched region. Default = 5.
 
-```strand_ration```: Minimum ratio of abund_count of siRNAs on the lower abundance strand.  Prevents identification of degraded single-stranded RNA regions
+```strand_ration```: Minimum ratio of abund_count of siRNAs on the lower abundance strand.  Prevents identification of degraded single-stranded RNA regions. Default = 0.2.
 
-```padding```: number of nucleotides to added to each end of the window for writing to file.  
+```padding```: number of nucleotides to added to each end of the window for writing to file.  Default = 30.
 
