@@ -1,5 +1,5 @@
 # siRNAenricher
-Python package for identifying genomic regions with siRNA enrichment
+Python package for identifying genomic regions with siRNA enrichment. Takes a SCRAM2 alignment file and genome reference (FASTA) as inputs and writes enriched regions to file (FASTA).
 
 ### Installation
 
