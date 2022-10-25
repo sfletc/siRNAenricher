@@ -257,6 +257,7 @@ class Enrichment(object):
         if len(self.collapsed_results) == 0:
             print("\nNo siRNA enriched regions identified\n")
         else:
+            print("\nNo. of enriched sequences identified: {}".format(len(self.collapsed_results)))
             b = RefSeq()
             b.load_ref_file(ref)
             c = RefSeq()
