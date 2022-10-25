@@ -189,7 +189,9 @@ class Enrichment(object):
     Enrichment class
     """
 
-    def __init__(self, window=200, cutoff=30, abund_count=5, strand_ratio=0.2, padding=30 ):
+    def __init__(
+        self, window=200, cutoff=30, abund_count=5, strand_ratio=0.2, padding=30
+    ):
         self.window = window
         self.cutoff = cutoff
         self.abund_count = abund_count
@@ -211,20 +213,24 @@ class Enrichment(object):
                     if win_count == 0:
                         win_count = 1
                         start_pos = sa.position
-                        if sa.strand == '+':
-                            positive_strand +=1
+                        if sa.strand == "+":
+                            positive_strand += 1
                         else:
-                            negative_strand +=1
+                            negative_strand += 1
                     elif sa.position - start_pos <= self.window:
                         win_count += 1
-                        if sa.strand == '+':
-                            positive_strand +=1
+                        if sa.strand == "+":
+                            positive_strand += 1
                         else:
-                            negative_strand +=1
+                            negative_strand += 1
                 if sa.position - start_pos > self.window:
                     if positive_strand == 0 or negative_strand == 0:
                         pass
-                    elif min(positive_strand, negative_strand)/max(positive_strand, negative_strand) < self.strand_ratio:
+                    elif (
+                        min(positive_strand, negative_strand)
+                        / max(positive_strand, negative_strand)
+                        < self.strand_ratio
+                    ):
                         pass
                     elif win_count >= self.abund_count:
                         self.expanded_results.append(
