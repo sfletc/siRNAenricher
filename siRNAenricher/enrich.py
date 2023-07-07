@@ -23,7 +23,7 @@ class RefSeq(dict):
                 if line == "":
                     pass
                 elif line[0] == ">":
-                    header = line[1:]
+                    header = line[1:].split()[0]
                     self[header] = []
                 else:
                     self[header].append(line)
